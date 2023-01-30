@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    container_name: flask_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - ./postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  app:
+    depends_on:
+      - db
+    image: flask:1.01
+    container_name: flask_container
+    build: ./App
+    working_dir: /app
+    volumes:
+      - ./App:/app
+    ports:
+      - "1111:1111"
+    command: gunicorn app:app --bind 0.0.0.0:1111
